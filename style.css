@@ -75,11 +75,12 @@ main {
     cursor: pointer;
 }
 
-.filter-btn:hover {
+.filter-btn:hover,
+.filter-btn.active {
     color: var(--text);
 }
 
-filter-btn:focus {
+.filter-btn:focus {
     outline: none;
 }
 

@@ -16,6 +16,35 @@ function stopOthers(currentAudio) {
     });
 }
 
+const trackList = document.querySelector(".track-list");
+
+archive.forEach(function (item) {
+    const file = item.number.toLowerCase();
+    const group = item.number.slice(0, 2);
+
+    trackList.insertAdjacentHTML("beforeend", `
+        <li class="track" data-group="${group}">
+            <div class="track-row">
+                <button class="play-btn">▶</button>
+                <span class="track-number">${item.number}</span>
+                <span class="track-title">${item.artist} - ${item.title}</span>
+                <div class="progress"><div class="progress-fill"></div></div>
+                <span class="track-time">00:00 / 00:00</span>
+            </div>
+
+            <div class="track-details">
+                <img src="covers/${file}.jpg" alt="Обложка ${item.number}" class="track-cover">
+                <div class="track-info">
+                    <p class="track-description">${item.description}</p>
+                    <p class="track-date">${item.date}</p>
+                </div>
+            </div>
+
+            <audio src="music/${file}.mp3" preload="metadata"></audio>
+        </li>
+    `);
+});
+
 const tracks = document.querySelectorAll(".track");
 
 tracks.forEach(function (track) {
@@ -71,5 +100,22 @@ tracks.forEach(function (track) {
 
     title.addEventListener("click", function () {
         track.classList.toggle("open");
+    });
+});
+
+const filterButtons = document.querySelectorAll(".filter-btn");
+
+filterButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+        const filter = button.dataset.filter;
+
+        filterButtons.forEach(function (btn) {
+            btn.classList.remove("active");
+        });
+        button.classList.add("active");
+
+        tracks.forEach(function (track) {
+            track.hidden = filter !== "ALL" && track.dataset.group !== filter;
+        });
     });
 });
