@@ -132,7 +132,11 @@ filter-btn:focus {
 
 .progress {
     height: 2px;
-    background-color: var(--line);
+    padding: 6px 0;
+    box-sizing: content-box;
+    background: var(--line);
+    background-clip: content-box;
+    cursor: pointer;
 }
 
 .progress-fill {
