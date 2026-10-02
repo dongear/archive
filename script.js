@@ -2,53 +2,47 @@ function formatTime(seconds) {
     if (isNaN(seconds)) {
         return "00:00";
     }
-    const minutes = Math.floor(seconds / 60);
+    const min = Math.floor(seconds / 60);
     const sec = Math.floor(seconds % 60);
-    return String(minutes).padStart(2, "0") + ":" + String(sec).padStart(2, "0");
+    return String(min).padStart(2, "0") + ":" + String(sec).padStart(2, "0");
 }
 
 function stopOthers(currentAudio) {
-    const allAudio = document.querySelectorAll("audio");
-    allAudio.forEach(function (audio) {
+    document.querySelectorAll("audio").forEach(function (audio) {
         if (audio !== currentAudio) {
             audio.pause();
         }
     });
 }
 
-const trackList = document.querySelector(".track-list");
-
-archive.forEach(function (item) {
+function createTrack(item) {
     const file = item.number.toLowerCase();
-    const group = item.number.slice(0, 2);
+    const li = document.createElement("li");
+    li.className = "track";
+    li.dataset.group = item.number.slice(0, 2);
 
-    trackList.insertAdjacentHTML("beforeend", `
-        <li class="track" data-group="${group}">
-            <div class="track-row">
-                <button class="play-btn">▶</button>
-                <span class="track-number">${item.number}</span>
-                <span class="track-title">${item.artist} - ${item.title}</span>
-                <div class="progress"><div class="progress-fill"></div></div>
-                <span class="track-time">00:00 / 00:00</span>
+    li.innerHTML = `
+        <div class="track-row">
+            <button class="play-btn">▶</button>
+            <span class="track-number">${item.number}</span>
+            <span class="track-title">${item.artist} - ${item.title}</span>
+            <div class="progress"><div class="progress-fill"></div></div>
+            <span class="track-time">00:00 / 00:00</span>
+        </div>
+        <div class="track-details">
+            <img src="covers/${file}.jpg" alt="Обложка ${item.number}" class="track-cover" loading="lazy">
+            <div class="track-info">
+                <p class="track-description">${item.description}</p>
+                <p class="track-date">${item.date}</p>
             </div>
+        </div>
+        <audio src="music/${file}.mp3" preload="metadata"></audio>
+    `;
 
-            <div class="track-details">
-                <img src="covers/${file}.jpg" alt="Обложка ${item.number}" class="track-cover">
-                <div class="track-info">
-                    <p class="track-description">${item.description}</p>
-                    <p class="track-date">${item.date}</p>
-                </div>
-            </div>
+    return li;
+}
 
-            <audio src="music/${file}.mp3" preload="metadata"></audio>
-        </li>
-    `);
-});
-
-const tracks = document.querySelectorAll(".track");
-
-tracks.forEach(function (track) {
-    
+function setupTrack(track) {
     const audio = track.querySelector("audio");
     const playBtn = track.querySelector(".play-btn");
     const title = track.querySelector(".track-title");
@@ -63,7 +57,9 @@ tracks.forEach(function (track) {
     playBtn.addEventListener("click", function () {
         if (audio.paused) {
             stopOthers(audio);
-            audio.play();
+            audio.play().catch(function () {
+                console.error("Не удалось воспроизвести: " + audio.getAttribute("src"));
+            });
         } else {
             audio.pause();
         }
@@ -90,7 +86,7 @@ tracks.forEach(function (track) {
     });
 
     progress.addEventListener("click", function (event) {
-        if (isNaN(audio.duration)) {
+        if (!audio.duration) {
             return;
         }
         const rect = progress.getBoundingClientRect();
@@ -101,6 +97,14 @@ tracks.forEach(function (track) {
     title.addEventListener("click", function () {
         track.classList.toggle("open");
     });
+}
+
+const trackList = document.querySelector(".track-list");
+
+archive.forEach(function (item) {
+    const track = createTrack(item);
+    trackList.appendChild(track);
+    setupTrack(track);
 });
 
 const filterButtons = document.querySelectorAll(".filter-btn");
@@ -109,13 +113,17 @@ filterButtons.forEach(function (button) {
     button.addEventListener("click", function () {
         const filter = button.dataset.filter;
 
-        filterButtons.forEach(function (btn) {
-            btn.classList.remove("active");
+        filterButtons.forEach(function (b) {
+            b.classList.remove("active");
         });
         button.classList.add("active");
 
-        tracks.forEach(function (track) {
-            track.hidden = filter !== "ALL" && track.dataset.group !== filter;
+        document.querySelectorAll(".track").forEach(function (track) {
+            if (filter === "ALL" || track.dataset.group === filter) {
+                track.style.display = "";
+            } else {
+                track.style.display = "none";
+            }
         });
     });
 });
