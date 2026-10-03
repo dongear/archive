@@ -15,6 +15,24 @@ function stopOthers(currentAudio) {
     });
 }
 
+let loopOn = false;
+
+function findFirstTrack() {
+    let firstTrack = document.querySelector(".track");
+    while (firstTrack && firstTrack.style.display === "none") {
+        firstTrack = firstTrack.nextElementSibling;
+    }
+    return firstTrack;
+}
+
+function findNextTrack(track) {
+    let nextTrack = track.nextElementSibling;
+    while (nextTrack && nextTrack.style.display === "none") {
+        nextTrack = nextTrack.nextElementSibling;
+    }
+    return nextTrack;
+}
+
 function createTrack(item) {
     const file = item.number.toLowerCase();
     const li = document.createElement("li");
@@ -67,10 +85,12 @@ function setupTrack(track) {
 
     audio.addEventListener("play", function () {
         playBtn.textContent = "■";
+        track.classList.add("playing");
     });
 
     audio.addEventListener("pause", function () {
         playBtn.textContent = "▶";
+        track.classList.remove("playing");
     });
 
     audio.addEventListener("loadedmetadata", updateTime);
@@ -83,6 +103,14 @@ function setupTrack(track) {
 
     audio.addEventListener("ended", function () {
         audio.currentTime = 0;
+
+        let nextTrack = findNextTrack(track);
+        if (!nextTrack && loopOn) {
+            nextTrack = findFirstTrack();
+        }
+        if (nextTrack) {
+            nextTrack.querySelector(".play-btn").click();
+        }
     });
 
     progress.addEventListener("click", function (event) {
@@ -126,4 +154,12 @@ filterButtons.forEach(function (button) {
             }
         });
     });
+});
+
+const loopBtn = document.querySelector(".loop-btn");
+
+loopBtn.addEventListener("click", function () {
+    loopOn = !loopOn;
+    loopBtn.classList.toggle("active", loopOn);
+    loopBtn.setAttribute("aria-pressed", loopOn);
 });

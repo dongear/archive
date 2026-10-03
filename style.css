@@ -66,7 +66,8 @@ main {
     margin-bottom: 16px;
     color: var(--line);
 }
-.filter-btn {
+.filter-btn,
+.loop-btn {
     background: none;
     border: none;
     padding: 0;
@@ -76,15 +77,31 @@ main {
 }
 
 .filter-btn:hover,
-.filter-btn.active {
+.filter-btn.active,
+.loop-btn:hover,
+.loop-btn.active {
     color: var(--text);
 }
 
-.filter-btn:focus {
+.loop-btn {
+    float: right;
+}
+
+.loop-btn::before {
+    content: "○ ";
+}
+
+.loop-btn.active::before {
+    content: "● ";
+}
+
+.filter-btn:focus,
+.loop-btn:focus {
     outline: none;
 }
 
-.filter-btn:focus-visible {
+.filter-btn:focus-visible,
+.loop-btn:focus-visible {
     outline: 1px solid var(--text);
     outline-offset: 2px;
 }
@@ -129,6 +146,10 @@ main {
 
 .track-title:hover {
     text-decoration: underline;
+}
+
+.track.playing .track-number {
+    color: var(--text);
 }
 
 .progress {
