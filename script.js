@@ -1,3 +1,5 @@
+let currentAudio = null;
+
 function formatTime(seconds) {
     if (isNaN(seconds)) {
         return "00:00";
@@ -86,6 +88,7 @@ function setupTrack(track) {
     audio.addEventListener("play", function () {
         playBtn.textContent = "■";
         track.classList.add("playing");
+        currentAudio = audio;
     });
 
     audio.addEventListener("pause", function () {
@@ -162,4 +165,31 @@ loopBtn.addEventListener("click", function () {
     loopOn = !loopOn;
     loopBtn.classList.toggle("active", loopOn);
     loopBtn.setAttribute("aria-pressed", loopOn);
+});
+
+document.addEventListener("keydown", function (event) {
+    if (event.code !== "Space") {
+        return;
+    }
+    if (event.target.tagName === "BUTTON") {
+        return;
+    }
+
+    event.preventDefault();
+    if (!currentAudio) {
+        const firstTrack = findFirstTrack();
+        if (!firstTrack) {
+            return;
+        }
+        currentAudio = firstTrack.querySelector("audio");
+    }
+
+    if (currentAudio.paused) {
+        stopOthers(currentAudio);
+        currentAudio.play().catch(function () {
+            console.error("Не удалось воспроизвести: " + currentAudio.getAttribute("src"));
+        });
+    } else {
+        currentAudio.pause();
+    }
 });

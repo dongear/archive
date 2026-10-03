@@ -96,12 +96,14 @@ main {
 }
 
 .filter-btn:focus,
-.loop-btn:focus {
+.loop-btn:focus,
+.play-btn:focus {
     outline: none;
 }
 
 .filter-btn:focus-visible,
-.loop-btn:focus-visible {
+.loop-btn:focus-visible,
+.play-btn:focus-visible {
     outline: 1px solid var(--text);
     outline-offset: 2px;
 }
