@@ -20,6 +20,7 @@ body {
     font-size: 14px;
     line-height: 1.4;
     padding: 24px;
+    padding-bottom: 72px;
 }
 
 a{
@@ -34,6 +35,29 @@ header {
 .logo {
     font-weight: bold;
     letter-spacing: 0.05em;
+}
+
+.logo::after {
+    content: "";
+    display: inline-block;
+    width: 0.55em;
+    height: 1em;
+    margin-left: 3px;
+    vertical-align: -0.15em;
+    background: currentColor;
+    animation: blink 1s steps(1) infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .logo::after {
+        animation: none;
+    }
 }
 
 main {
@@ -193,11 +217,17 @@ main {
 
 .track-description {
     margin-bottom: 8px;
+    white-space: pre-line;
 }
 
 .track-date {
     color: var(--muted);
     font-size: 12px;
+}
+
+.track-error {
+    padding: 10px 0;
+    color: var(--muted);
 }
 
 body::before {
@@ -210,9 +240,64 @@ body::before {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+.now-playing {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 5;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 24px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    background: var(--bg);
+    border-top: 1px solid var(--line);
+    font-family: "SF Mono", Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+    transform: translateY(100%);
+    transition: transform 0.3s;
+}
+
+.now-playing.visible {
+    transform: translateY(0);
+}
+
+.now-playing-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.now-playing-text::after {
+    content: "_";
+    margin-left: 2px;
+    animation: blink 1s steps(1) infinite;
+}
+
+.now-playing.paused .now-playing-text {
+    color: var(--muted);
+}
+
+.now-playing.paused .now-playing-text::after {
+    animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .now-playing-text::after {
+        animation: none;
+    }
+}
+
+.now-playing-time {
+    color: var(--muted);
+    flex-shrink: 0;
+}
+
 @media (max-width: 600px) {
     body {
-        padding: 16px;    
+        padding: 16px;
+        padding-bottom: 72px;
     }
 
     .track-row {

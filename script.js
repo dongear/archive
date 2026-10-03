@@ -1,5 +1,9 @@
 let currentAudio = null;
 
+const nowPlaying = document.querySelector(".now-playing");
+const nowText = document.querySelector(".now-playing-text");
+const nowTime = document.querySelector(".now-playing-time");
+
 function formatTime(seconds) {
     if (isNaN(seconds)) {
         return "00:00";
@@ -35,28 +39,44 @@ function findNextTrack(track) {
     return nextTrack;
 }
 
+function escapeHtml(text) {
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+}
+
 function createTrack(item) {
-    const file = item.number.toLowerCase();
     const li = document.createElement("li");
     li.className = "track";
-    li.dataset.group = item.number.slice(0, 2);
+    li.dataset.group = item.group;
+    li.dataset.label = item.number + "  " + item.artist + " - " + item.title;
+
+    const cover = item.cover
+        ? `<img src="${escapeHtml(item.cover)}" alt="Обложка ${escapeHtml(item.number)}" class="track-cover" loading="lazy">`
+        : "";
+
+    const description = item.description.map(function (paragraph) {
+        return `<p class="track-description">${escapeHtml(paragraph)}</p>`;
+    }).join("");
 
     li.innerHTML = `
         <div class="track-row">
             <button class="play-btn">▶</button>
-            <span class="track-number">${item.number}</span>
-            <span class="track-title">${item.artist} - ${item.title}</span>
+            <span class="track-number">${escapeHtml(item.number)}</span>
+            <span class="track-title">${escapeHtml(item.artist)} - ${escapeHtml(item.title)}</span>
             <div class="progress"><div class="progress-fill"></div></div>
             <span class="track-time">00:00 / 00:00</span>
         </div>
         <div class="track-details">
-            <img src="covers/${file}.jpg" alt="Обложка ${item.number}" class="track-cover" loading="lazy">
+            ${cover}
             <div class="track-info">
-                <p class="track-description">${item.description}</p>
-                <p class="track-date">${item.date}</p>
+                ${description}
+                <p class="track-date">${escapeHtml(item.date)}</p>
             </div>
         </div>
-        <audio src="music/${file}.mp3" preload="metadata"></audio>
+        <audio src="${escapeHtml(item.audio)}" preload="metadata"></audio>
     `;
 
     return li;
@@ -71,7 +91,11 @@ function setupTrack(track) {
     const time = track.querySelector(".track-time");
 
     function updateTime() {
-        time.textContent = formatTime(audio.currentTime) + " / " + formatTime(audio.duration);
+        const text = formatTime(audio.currentTime) + " / " + formatTime(audio.duration);
+        time.textContent = text;
+        if (audio === currentAudio) {
+            nowTime.textContent = text;
+        }
     }
 
     playBtn.addEventListener("click", function () {
@@ -89,11 +113,20 @@ function setupTrack(track) {
         playBtn.textContent = "■";
         track.classList.add("playing");
         currentAudio = audio;
+
+        nowPlaying.classList.add("visible");
+        nowPlaying.classList.remove("paused");
+        nowText.textContent = "> playing: " + track.dataset.label;
+        updateTime();
     });
 
     audio.addEventListener("pause", function () {
         playBtn.textContent = "▶";
         track.classList.remove("playing");
+        if (audio === currentAudio) {
+            nowPlaying.classList.add("paused");
+            nowText.textContent = "> paused: " + track.dataset.label;
+        }
     });
 
     audio.addEventListener("loadedmetadata", updateTime);
@@ -131,35 +164,64 @@ function setupTrack(track) {
 }
 
 const trackList = document.querySelector(".track-list");
+const filters = document.querySelector(".filters");
+const loopBtn = filters.querySelector(".loop-btn");
 
-archive.forEach(function (item) {
-    const track = createTrack(item);
-    trackList.appendChild(track);
-    setupTrack(track);
-});
+// Кнопки DG / CC / ... берутся из ARTISTS в build-tracks.js.
+function createFilters(artists) {
+    artists.forEach(function (artist) {
+        const button = document.createElement("button");
+        button.className = "filter-btn";
+        button.dataset.filter = artist.code;
+        button.title = artist.name;
+        button.textContent = artist.code;
 
-const filterButtons = document.querySelectorAll(".filter-btn");
+        filters.insertBefore(document.createTextNode(" / "), loopBtn);
+        filters.insertBefore(button, loopBtn);
+    });
+}
 
-filterButtons.forEach(function (button) {
-    button.addEventListener("click", function () {
-        const filter = button.dataset.filter;
+filters.addEventListener("click", function (event) {
+    const button = event.target.closest(".filter-btn");
+    if (!button) {
+        return;
+    }
+    const filter = button.dataset.filter;
 
-        filterButtons.forEach(function (b) {
-            b.classList.remove("active");
-        });
-        button.classList.add("active");
+    filters.querySelectorAll(".filter-btn").forEach(function (b) {
+        b.classList.remove("active");
+    });
+    button.classList.add("active");
 
-        document.querySelectorAll(".track").forEach(function (track) {
-            if (filter === "ALL" || track.dataset.group === filter) {
-                track.style.display = "";
-            } else {
-                track.style.display = "none";
-            }
-        });
+    document.querySelectorAll(".track").forEach(function (track) {
+        if (filter === "ALL" || track.dataset.group === filter) {
+            track.style.display = "";
+        } else {
+            track.style.display = "none";
+        }
     });
 });
 
-const loopBtn = document.querySelector(".loop-btn");
+fetch("tracks.json", { cache: "no-cache" })
+    .then(function (response) {
+        if (!response.ok) {
+            throw new Error("HTTP " + response.status);
+        }
+        return response.json();
+    })
+    .then(function (data) {
+        createFilters(data.artists);
+
+        data.tracks.forEach(function (item) {
+            const track = createTrack(item);
+            trackList.appendChild(track);
+            setupTrack(track);
+        });
+    })
+    .catch(function (error) {
+        console.error("Не удалось загрузить tracks.json:", error);
+        trackList.innerHTML = '<li class="track-error">tracks.json не найден. Запусти: node build-tracks.js</li>';
+    });
 
 loopBtn.addEventListener("click", function () {
     loopOn = !loopOn;
