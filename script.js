@@ -167,7 +167,7 @@ const trackList = document.querySelector(".track-list");
 const filters = document.querySelector(".filters");
 const loopBtn = filters.querySelector(".loop-btn");
 
-// Кнопки DG / CC / ... берутся из ARTISTS в build-tracks.js.
+
 function createFilters(artists) {
     artists.forEach(function (artist) {
         const button = document.createElement("button");

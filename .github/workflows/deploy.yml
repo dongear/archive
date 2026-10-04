@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Build tracks.json
+      - name: Build tracks.json and posts.json
         run: node build-tracks.js
 
       - uses: actions/configure-pages@v6
