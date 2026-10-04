@@ -51,6 +51,7 @@ function createTrack(item) {
     const li = document.createElement("li");
     li.className = "track";
     li.dataset.group = item.group;
+    li.dataset.number = item.number;
     li.dataset.label = item.number + "  " + item.artist + " - " + item.title;
 
     const cover = item.cover
@@ -74,6 +75,7 @@ function createTrack(item) {
             <div class="track-info">
                 ${description}
                 <p class="track-date">${escapeHtml(item.date)}</p>
+                <div class="comments"></div>
             </div>
         </div>
         <audio src="${escapeHtml(item.audio)}" preload="metadata"></audio>
@@ -160,6 +162,9 @@ function setupTrack(track) {
 
     title.addEventListener("click", function () {
         track.classList.toggle("open");
+        if (track.classList.contains("open")) {
+            mountComments(track.querySelector(".comments"), "/music/" + track.dataset.number);
+        }
     });
 }
 
@@ -234,6 +239,10 @@ document.addEventListener("keydown", function (event) {
         return;
     }
     if (event.target.tagName === "BUTTON") {
+        return;
+    }
+    // Пробел в поле комментария — это просто пробел, а не пауза.
+    if (event.target.closest("input, textarea, [contenteditable]")) {
         return;
     }
 

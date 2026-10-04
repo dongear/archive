@@ -50,11 +50,15 @@ function createPost(item) {
         <div class="post-details">
             ${images ? `<div class="post-images">${images}</div>` : ""}
             ${text}
+            <div class="comments"></div>
         </div>
     `;
 
     li.querySelector(".post-row").addEventListener("click", function () {
         li.classList.toggle("open");
+        if (li.classList.contains("open")) {
+            mountComments(li.querySelector(".comments"), "/journal/" + item.number);
+        }
     });
 
     li.querySelectorAll(".post-thumb").forEach(function (thumb) {

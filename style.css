@@ -245,6 +245,88 @@ main {
     font-size: 12px;
 }
 
+.track-info {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Комментарии (Waline): перекрашиваем под палитру сайта. */
+.comments {
+    max-width: 520px;
+    margin-top: 24px;
+    --waline-font-size: 14px;
+    --waline-white: var(--bg);
+    --waline-color: var(--text);
+    --waline-theme-color: var(--text);
+    --waline-active-color: var(--muted);
+    --waline-bg-color: transparent;
+    --waline-bg-color-light: transparent;
+    --waline-bg-color-hover: transparent;
+    --waline-border-color: var(--line);
+    --waline-light-grey: var(--muted);
+    --waline-dark-grey: var(--muted);
+    --waline-info-color: var(--muted);
+    --waline-info-bg-color: transparent;
+    --waline-badge-color: var(--muted);
+    --waline-disable-bg-color: transparent;
+    --waline-avatar-size: 0px;
+    --waline-avatar-radius: 0;
+}
+
+/* Форма: прямые углы, сплошные тонкие линии, шрифт сайта. */
+.comments .wl-panel {
+    margin: 0 0 16px;
+    border-radius: 0;
+}
+
+.comments .wl-header {
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+}
+
+.comments .wl-input,
+.comments .wl-editor {
+    font: inherit;
+}
+
+.comments .wl-editor {
+    min-height: 5em;
+    border-radius: 0;
+}
+
+.comments .wl-btn {
+    border-radius: 0;
+}
+
+/* Лишние кнопки и счётчики прячем. */
+.comments .wl-actions,
+.comments .wl-text-number,
+.comments .wl-sort,
+.comments .wl-meta,
+.comments .wl-user {
+    display: none;
+}
+
+/* Заголовок "N Comments" не нужен: комментарии и так видно. */
+.comments .wl-meta-head {
+    display: none;
+}
+
+.comments .wl-empty {
+    padding: 0;
+    font-size: 12px;
+    color: var(--muted);
+    text-align: left;
+}
+
+.comments .wl-card-item {
+    padding: 8px 0;
+}
+
+.comments .wl-card {
+    border-bottom: 1px solid var(--line);
+}
+
 .track-error {
     padding: 10px 0;
     color: var(--muted);
