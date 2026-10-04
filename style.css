@@ -250,6 +250,20 @@ main {
     color: var(--muted);
 }
 
+.not-found-code {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.not-found-text {
+    color: var(--muted);
+}
+
+.not-found-text a {
+    color: var(--text);
+    text-decoration: underline;
+}
+
 .post {
     border-bottom: 1px solid var(--line);
 }
