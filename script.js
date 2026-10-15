@@ -241,7 +241,6 @@ document.addEventListener("keydown", function (event) {
     if (event.target.tagName === "BUTTON") {
         return;
     }
-    // Пробел в поле комментария — это просто пробел, а не пауза.
     if (event.target.closest("input, textarea, [contenteditable]")) {
         return;
     }

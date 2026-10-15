@@ -1,20 +1,11 @@
-// Собирает tracks.json из папок tracks/<номер>/
-// и posts.json из папок posts/<номер>/.
-// Запуск: node build-tracks.js
-
 const fs = require("fs");
 const path = require("path");
 
-// Альтер эго: первые две буквы номера → имя исполнителя.
-// Чтобы добавить новое, допиши строку сюда — кнопка фильтра появится сама
-// (кнопки идут в том же порядке, что и строки).
 const ARTISTS = {
     DG: "Don gear",
     CC: "¢reepyforda¢reepin",
 };
 
-// Типы постов журнала: первые две буквы номера → название.
-// Кнопки фильтра на journal.html идут в том же порядке.
 const POST_TYPES = {
     BK: "Books",
     FM: "Films",
@@ -27,7 +18,6 @@ const POSTS_DIR = path.join(__dirname, "posts");
 const POSTS_FILE = path.join(__dirname, "posts.json");
 const IMAGE_FILE = /\.(jpe?g|png)$/i;
 
-// "title: ...", "date: ...", пустая строка, дальше описание.
 function parseInfo(text) {
     const lines = text.replace(/^﻿/, "").replace(/\r\n?/g, "\n").split("\n");
     const info = {};
@@ -54,7 +44,6 @@ function parseInfo(text) {
     return info;
 }
 
-// "19.09.2026" → число для сортировки. Неправильная дата → 0 (уходит вниз).
 function dateValue(date) {
     const match = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec(date || "");
     if (!match) {
@@ -63,7 +52,6 @@ function dateValue(date) {
     return Number(match[3]) * 10000 + Number(match[2]) * 100 + Number(match[1]);
 }
 
-// Папки внутри dir (без скрытых), или [] если dir нет.
 function listFolders(dir) {
     if (!fs.existsSync(dir)) {
         return [];
@@ -77,7 +65,6 @@ function listFolders(dir) {
         });
 }
 
-// Новые сверху; при одинаковой дате — больший номер выше.
 function newestFirst(a, b) {
     return dateValue(b.date) - dateValue(a.date) || b.number.localeCompare(a.number);
 }
@@ -158,7 +145,6 @@ function buildPosts() {
             console.warn(folder + ": дата \"" + info.date + "\" не в формате ДД.ММ.ГГГГ");
         }
 
-        // Все .jpg/.jpeg/.png по имени файла (numeric: 2.jpg раньше 10.jpg).
         const images = fs.readdirSync(dir)
             .filter(function (name) {
                 return IMAGE_FILE.test(name);
@@ -170,7 +156,6 @@ function buildPosts() {
                 return "posts/" + folder + "/" + encodeURIComponent(name);
             });
 
-        // Поля, которых нет в info.txt, в JSON будут null.
         posts.push({
             number: number,
             type: type,

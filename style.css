@@ -250,7 +250,6 @@ main {
     min-width: 0;
 }
 
-/* Комментарии (Waline): перекрашиваем под палитру сайта. */
 .comments {
     max-width: 520px;
     margin-top: 24px;
@@ -273,7 +272,6 @@ main {
     --waline-avatar-radius: 0;
 }
 
-/* Форма: прямые углы, сплошные тонкие линии, шрифт сайта. */
 .comments .wl-panel {
     margin: 0 0 16px;
     border-radius: 0;
@@ -298,7 +296,6 @@ main {
     border-radius: 0;
 }
 
-/* Лишние кнопки и счётчики прячем. */
 .comments .wl-actions,
 .comments .wl-text-number,
 .comments .wl-sort,
@@ -307,7 +304,6 @@ main {
     display: none;
 }
 
-/* Заголовок "N Comments" не нужен: комментарии и так видно. */
 .comments .wl-meta-head {
     display: none;
 }

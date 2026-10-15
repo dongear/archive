@@ -1,12 +1,9 @@
-// Комментарии через Waline (сервер на Vercel, база на Neon).
-// Пока адрес пустой, комментарии на сайте просто не показываются.
 const COMMENTS_SERVER = "https://archive-comments.vercel.app";
 
 const WALINE_URL = "https://unpkg.com/@waline/client@v3/dist/";
 
 let walineLoading = null;
 
-// Скрипт и стили Waline грузятся один раз, при первом раскрытии записи.
 function loadWaline() {
     if (!walineLoading) {
         const css = document.createElement("link");
@@ -19,8 +16,6 @@ function loadWaline() {
     return walineLoading;
 }
 
-// id — постоянный ключ записи, например "/music/CC0003" или "/journal/BK0002".
-// По нему Waline понимает, чьи это комментарии, даже если адрес сайта поменяется.
 function mountComments(container, id) {
     if (!COMMENTS_SERVER || container.dataset.mounted) {
         return;

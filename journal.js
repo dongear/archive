@@ -9,8 +9,6 @@ function escapeHtml(text) {
 const postList = document.querySelector(".post-list");
 const filters = document.querySelector(".filters");
 
-// BK: "название — автор", FM: "название — режиссёр, год", PH: "название".
-// Пустые поля (null) просто пропускаются.
 function postTitle(item) {
     let title = item.title;
 
@@ -70,7 +68,6 @@ function createPost(item) {
     return li;
 }
 
-// Кнопки BK / FM / PH берутся из POST_TYPES в build-tracks.js.
 function createFilters(types) {
     types.forEach(function (type) {
         const button = document.createElement("button");
@@ -105,7 +102,6 @@ filters.addEventListener("click", function (event) {
     });
 });
 
-// Лайтбокс: картинка крупно поверх страницы.
 const lightbox = document.querySelector(".lightbox");
 const lightboxImg = lightbox.querySelector(".lightbox-img");
 const lightboxCount = lightbox.querySelector(".lightbox-count");
@@ -116,7 +112,6 @@ let lightboxImages = [];
 let lightboxIndex = 0;
 
 function showImage(index) {
-    // По кругу: после последней — первая, перед первой — последняя.
     lightboxIndex = (index + lightboxImages.length) % lightboxImages.length;
     lightboxImg.src = lightboxImages[lightboxIndex];
     lightboxCount.textContent = (lightboxIndex + 1) + " / " + lightboxImages.length;
@@ -144,7 +139,6 @@ lightboxNext.addEventListener("click", function () {
     showImage(lightboxIndex + 1);
 });
 
-// Клик по фону закрывает, клик по картинке и кнопкам — нет.
 lightbox.addEventListener("click", function (event) {
     if (event.target === lightbox) {
         closeLightbox();
